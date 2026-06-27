@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import seaborn as sb
 import pandas as pd
 import os
+from sklearn import linear_model
 
 data_path="eurovision2026.csv"
 output="images"
@@ -175,6 +176,25 @@ def analysis_ranks_vs_total_points(df):
     plt.savefig(f"{output}/ranks_vs_total_points.png")
     plt.show()
 
+def predict_rank_from_year_and_total_point(df):
+    x=df[["year","total_points"]]
+    y=df["rank"]
+
+    regr=linear_model.LinearRegression()
+    regr.fit(x,y)
+
+    input_year=int(input("Enter a year: "))
+    input_point=int(input("Enter a total point: "))
+
+    new_data=pd.DataFrame([[input_year,input_point]],columns=["year","total_points"])
+
+    result=regr.predict(new_data)
+    print(f"predicted rank: {result.astype(int)}")
+
+    one_more_predict=input("Do you wanna enter diffirent values? (y/n)")
+    if one_more_predict.strip().lower()=="y":
+        predict_rank_from_year_and_total_point(df)
+
 # MAIN PIPELINE
 #-----------------------
 def main():
@@ -189,6 +209,7 @@ def main():
     countries_with_most_eurovision_wins_analysis(df)
     countries_with_all_ranks_analysis(df)
     analysis_ranks_vs_total_points(df)
+    predict_rank_from_year_and_total_point(df)
 
 # RUN
 #-----------------------
